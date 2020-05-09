@@ -36,21 +36,36 @@ namespace RecordLabelApi
                         builder.WithOrigins("http://localhost:8080")
                                 .AllowAnyMethod()
                                 .AllowAnyHeader();
+                    
                     });
             });
 
+            
+
             services.AddDbContext<Db>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("database")));
+
+            services.AddScoped<IDbInitializer, DbInitializer>();
+
             services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Db db)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            var scopeFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
+            using (var scope = scopeFactory.CreateScope())
+            {
+                var dbInitializer = scope.ServiceProvider.GetService<IDbInitializer>();
+                dbInitializer.Initialize();
+                dbInitializer.SeedData();
+            }
+
 
             app.UseHttpsRedirection();
 

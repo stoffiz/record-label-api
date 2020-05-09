@@ -14,11 +14,11 @@ namespace RecordLabelApi.Controllers
     [ApiController]
     public class MessageController : ControllerBase
     {
-        private readonly Db _context;
+        private readonly Db _db;
 
-        public MessageController(Db context)
+        public MessageController(Db db)
         {
-            _context = context;
+            _db = db;
         }
 
         // GET: api/Message
@@ -26,7 +26,7 @@ namespace RecordLabelApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Message>>> GetMessages()
         {
-            return await _context.Messages.ToListAsync();
+            return await _db.Messages.ToListAsync();
         }
 
         // GET: api/Message/5
@@ -34,7 +34,7 @@ namespace RecordLabelApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Message>> GetMessage(int id)
         {
-            var message = await _context.Messages.FindAsync(id);
+            var message = await _db.Messages.FindAsync(id);
 
             if (message == null)
             {
@@ -56,11 +56,11 @@ namespace RecordLabelApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(message).State = EntityState.Modified;
+            _db.Entry(message).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -84,8 +84,8 @@ namespace RecordLabelApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Message>> PostMessage(Message message)
         {
-            _context.Messages.Add(message);
-            await _context.SaveChangesAsync();
+            _db.Messages.Add(message);
+            await _db.SaveChangesAsync();
 
             return CreatedAtAction("GetMessage", new { id = message.Id }, message);
         }
@@ -95,21 +95,21 @@ namespace RecordLabelApi.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Message>> DeleteMessage(int id)
         {
-            var message = await _context.Messages.FindAsync(id);
+            var message = await _db.Messages.FindAsync(id);
             if (message == null)
             {
                 return NotFound();
             }
 
-            _context.Messages.Remove(message);
-            await _context.SaveChangesAsync();
+            _db.Messages.Remove(message);
+            await _db.SaveChangesAsync();
 
-            return message;
+            return Ok(message);
         }
 
         private bool MessageExists(int id)
         {
-            return _context.Messages.Any(e => e.Id == id);
+            return _db.Messages.Any(e => e.Id == id);
         }
     }
 }

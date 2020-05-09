@@ -16,7 +16,9 @@ namespace RecordLabelApi.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Release>()
                 .Property(r => r.ReleaseDate)
                 .IsRequired(false);
