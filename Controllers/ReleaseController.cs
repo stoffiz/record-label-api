@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RecordLabelApi.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace RecordLabelApi.Controllers
@@ -92,9 +94,11 @@ namespace RecordLabelApi.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [EnableCors("CustomPolicy")]
+        [Authorize(Roles = Role.Admin)]
         [HttpPost]
         public async Task<ActionResult<Release>> PostRelease(Release release)
         {
+            
 
             //Validate that CatalogNumber doesn't already exist
             if (await _db.Releases.CountAsync(r => r.CatalogNr == release.CatalogNr && r.Id != release.Id) > 0)

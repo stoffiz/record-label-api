@@ -38,5 +38,6 @@ namespace RecordLabelApi.Data
         public DbSet<Release> Releases { get; set; }
         public DbSet<News> News { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
